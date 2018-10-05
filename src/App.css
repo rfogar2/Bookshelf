@@ -25,6 +25,8 @@
 .Bookshelf {
   border-style: solid;
   padding: 5px;
+  display: flex;
+  flex-direction: row;
 }
 
 .Book {
