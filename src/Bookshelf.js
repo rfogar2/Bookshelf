@@ -3,6 +3,7 @@ import Book from "./Book.js"
 
 const electron = window.require("electron");
 const dialog = electron.remote.dialog
+const ipcRenderer = electron.ipcRenderer
 
 class Bookshelf extends Component {
   constructor(props) {
@@ -21,16 +22,20 @@ class Bookshelf extends Component {
       message: `Add ${this.state.newBookTitle} to ${this.props.shelfTitle}?`
     }
 
-    dialog.showMessageBox(dialogOptions, i => console.log(i))
-    this.setState({newBookTitle: ""})
+    dialog.showMessageBox(dialogOptions, i => {
+      if (i === 0) {
+        ipcRenderer.send("add-book", this.state.newBookTitle, this.props.shelfTitle)
+      }
+      this.setState({newBookTitle: ""})
+    })
   }
 
   render() {
     return (
       <div>
         <div className="Bookshelf">
-          {this.props.books.map((book) => {
-            return <Book title={book}/>
+          {this.props.books.map((bookTitle) => {
+            return <Book title={bookTitle}/>
           })}
         </div>
         <div className="ShelfTitle">
