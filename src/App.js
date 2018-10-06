@@ -1,19 +1,18 @@
 import React, { Component } from 'react'
-import logo from './logo.svg'
 import Bookshelf from './Bookshelf.js'
 import './App.css'
 
-const readBooks = ["Hello World", "Hello World 2"]
-const unreadBooks = []
+const bookshelves = {
+  readBooks: ["Hello World", "Hello World 2"],
+  unreadBooks: [],
+}
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <Bookshelf shelfTitle="Read" books={readBooks}/>
-          <Bookshelf shelfTitle="Unread" books={unreadBooks}/>
-        </header>
+        <Bookshelf shelfTitle="Read" books={bookshelves.readBooks}/>
+        <Bookshelf shelfTitle="Unread" books={bookshelves.unreadBooks}/>
       </div>
     )
   }

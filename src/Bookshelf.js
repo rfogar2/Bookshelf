@@ -35,7 +35,7 @@ class Bookshelf extends Component {
       <div>
         <div className="Bookshelf">
           {this.props.books.map((bookTitle) => {
-            return <Book title={bookTitle}/>
+            return <Book key={bookTitle} title={bookTitle}/>
           })}
         </div>
         <div className="ShelfTitle">
