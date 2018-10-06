@@ -1,6 +1,6 @@
 const electron = require("electron")
 
-const { app, BrowserWindow, ipcMain } = electron
+const { app, BrowserWindow, ipcMain, session, Menu } = electron
 
 const path = require("path")
 const url = require("url")
@@ -23,23 +23,63 @@ function createWindow() {
     // Open the DevTools.
     mainWindow.webContents.openDevTools()
 
-    // Emitted when the window is closed.
     mainWindow.on("closed", function () {
-        // Dereference the window object, usually you would store windows
-        // in an array if your app supports multi windows, this is the time
-        // when you should delete the corresponding element.
         mainWindow = null
     })
 }
 
-ipcMain.on("add-book", (e, book, bookshelf) => {
-  console.log(`Added book ${book} to bookshelf ${bookshelf}`)
+let addBookModal
+let addShelfModal
+let bookshelfToAddTo
+
+const template = [
+  {
+    label: "Electron"
+  },
+  {
+    label: "Edit",
+    submenu: [
+      {
+        label: "Add bookshelf",
+        click () {
+          addShelfModal = new BrowserWindow({width: 400, height: 200, parent: mainWindow, modal: true})
+          addShelfModal.loadURL(`file://${__dirname}/add-shelf.html`)
+        }
+      }
+    ]
+  }
+]
+
+ipcMain.on("open-modal-for-shelf", (e, bookshelf) => {
+  bookshelfToAddTo = bookshelf
+
+  addBookModal = new BrowserWindow({width: 400, height: 200, parent: mainWindow, modal: true})
+  addBookModal.loadURL(`file://${__dirname}/add-book.html`)
+})
+
+ipcMain.on("add-book", (e, book) => {
+  console.log(`Adding ${book} to ${bookshelfToAddTo}`)
+
+  addBookModal.close()
+  addBookModal = null
+})
+
+ipcMain.on("add-shelf", (e, shelf) => {
+  console.log(`Adding shelf ${shelf}`)
+
+  addShelfModal.close()
+  addShelfModal = null
 })
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on("ready", createWindow)
+app.on("ready", () => {
+  createWindow()
+
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
+})
 
 // Quit when all windows are closed.
 app.on("window-all-closed", function () {

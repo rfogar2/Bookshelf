@@ -16,7 +16,7 @@
     "electron-dev": "ELECTRON_START_URL=http://localhost:3000 electron ."
   },
   "homepage": "./",
-  "main": "src/electron-starter.js",
+  "main": "src/main.js",
   "eslintConfig": {
     "extends": "react-app"
   },
