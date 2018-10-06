@@ -11,6 +11,12 @@ class Bookshelf extends Component {
     this.addBook = this.addBook.bind(this)
   }
 
+  componentDidMount() {
+    ipcRenderer.on("open-modal-for-shelf", (e) => {
+      console.log("hello")
+    })
+  }
+
   addBook() {
     ipcRenderer.send("open-modal-for-shelf", this.props.shelfTitle)
   }

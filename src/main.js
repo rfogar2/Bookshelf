@@ -1,9 +1,12 @@
 const electron = require("electron")
 
-const { app, BrowserWindow, ipcMain, session, Menu } = electron
+const { app, BrowserWindow, ipcMain, Menu } = electron
 
 const path = require("path")
 const url = require("url")
+
+const Store = require("electron-store")
+const bookshelvesStore = new Store()
 
 // Keep a global reference of the window object, if you don"t, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -34,7 +37,10 @@ let bookshelfToAddTo
 
 const template = [
   {
-    label: "Electron"
+    label: "Electron",
+    submenu: [
+      { role: "quit" }
+    ]
   },
   {
     label: "Edit",
@@ -44,7 +50,8 @@ const template = [
         click () {
           addShelfModal = new BrowserWindow({width: 400, height: 200, parent: mainWindow, modal: true})
           addShelfModal.loadURL(`file://${__dirname}/add-shelf.html`)
-        }
+        },
+        accelerator: "Command+b"
       }
     ]
   }
@@ -60,15 +67,25 @@ ipcMain.on("open-modal-for-shelf", (e, bookshelf) => {
 ipcMain.on("add-book", (e, book) => {
   console.log(`Adding ${book} to ${bookshelfToAddTo}`)
 
+  const shelf = bookshelvesStore.get(bookshelfToAddTo)
+  shelf.push(book)
+  bookshelvesStore.set(bookshelfToAddTo, shelf)
+
   addBookModal.close()
   addBookModal = null
+
+  mainWindow.webContents.send("force-refresh")
 })
 
 ipcMain.on("add-shelf", (e, shelf) => {
   console.log(`Adding shelf ${shelf}`)
 
+  bookshelvesStore.set(shelf, [])
+
   addShelfModal.close()
   addShelfModal = null
+
+  mainWindow.webContents.send("force-refresh")
 })
 
 // This method will be called when Electron has finished
