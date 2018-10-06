@@ -57,7 +57,7 @@ const template = [
   }
 ]
 
-ipcMain.on("open-modal-for-shelf", (e, bookshelf) => {
+ipcMain.on("add-book-to-shelf", (e, bookshelf) => {
   bookshelfToAddTo = bookshelf
 
   addBookModal = new BrowserWindow({width: 400, height: 200, parent: mainWindow, modal: true})
@@ -65,8 +65,6 @@ ipcMain.on("open-modal-for-shelf", (e, bookshelf) => {
 })
 
 ipcMain.on("add-book", (e, book) => {
-  console.log(`Adding ${book} to ${bookshelfToAddTo}`)
-
   const shelf = bookshelvesStore.get(bookshelfToAddTo)
   shelf.push(book)
   bookshelvesStore.set(bookshelfToAddTo, shelf)
@@ -78,8 +76,6 @@ ipcMain.on("add-book", (e, book) => {
 })
 
 ipcMain.on("add-shelf", (e, shelf) => {
-  console.log(`Adding shelf ${shelf}`)
-
   bookshelvesStore.set(shelf, [])
 
   addShelfModal.close()
